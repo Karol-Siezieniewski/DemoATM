@@ -39,7 +39,14 @@ public class User {
 
         this.accounts = new ArrayList<Account>();
 
+
         System.out.printf("New user %s, %s, with ID %s created. \n", lastName, firstName, this.id);
+
+    }
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
     }
 
     /**
@@ -85,7 +92,7 @@ public class User {
     public void printAccountsSummary() {
         System.out.printf("\n\n%s's accounts summary\n", this.firstName);
         for (int a = 0; a < this.accounts.size(); a++) {
-            System.out.printf("  %d) %s", a+1, this.accounts.get(a).getSummaryLine());
+            System.out.printf("  %d) %s", a + 1, this.accounts.get(a).getSummaryLine());
             System.out.println();
         }
         System.out.println();
@@ -93,7 +100,8 @@ public class User {
 
     /**
      * Get the number of accounts of the user
-     * @return  the number of accounts
+     *
+     * @return the number of accounts
      */
     public int numAccounts() {
         return this.accounts.size();
@@ -101,7 +109,8 @@ public class User {
 
     /**
      * Print transaction history for a particular account.
-     * @param acctIdx   the index of the account to use
+     *
+     * @param acctIdx the index of the account to use
      */
     public void printAcctTransHistory(int acctIdx) {
         this.accounts.get(acctIdx).printTransHistory();
@@ -109,8 +118,9 @@ public class User {
 
     /**
      * Get the balance of a aprticular account
-     * @param acctIdx   the index of the account to use
-     * @return          the balance of the account
+     *
+     * @param acctIdx the index of the account to use
+     * @return the balance of the account
      */
     public double getAcctBalance(int acctIdx) {
         return this.accounts.get(acctIdx).getBalance();
@@ -118,10 +128,11 @@ public class User {
 
     /**
      * Get the ID of a particular account
-     * @param acctIdx   the index of the account to use
-     * @return          the ID of the account
+     *
+     * @param acctIdx the index of the account to use
+     * @return the ID of the account
      */
-    public String getAcctID(int acctIdx){
+    public String getAcctID(int acctIdx) {
         return this.accounts.get(acctIdx).getID();
     }
 

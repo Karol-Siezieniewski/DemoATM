@@ -13,10 +13,11 @@ public class Transaction {
 
     /**
      * Creates a new transaction containing 2 variables
+     *
      * @param amount
      * @param whichAccount
      */
-    public Transaction(double amount, Account whichAccount){
+    public Transaction(double amount, Account whichAccount) {
 
         this.amount = amount;
         this.whichAccount = whichAccount;
@@ -27,11 +28,12 @@ public class Transaction {
 
     /**
      * Creates a new transaction containing 3 variables
+     *
      * @param amount
      * @param whichAccount
      * @param notes
      */
-    public Transaction(double amount, Account whichAccount, String notes){
+    public Transaction(double amount, Account whichAccount, String notes) {
 
         this(amount, whichAccount);
 
@@ -40,7 +42,8 @@ public class Transaction {
 
     /**
      * Get the amount of the transaction
-     * @return  the amount
+     *
+     * @return the amount
      */
     public double getAmount() {
         return this.amount;
@@ -48,11 +51,12 @@ public class Transaction {
 
     /**
      * Get a string summarizing the transaction
-     * @return  the summary string
+     *
+     * @return the summary string
      */
-    public String getSummaryLine(){
+    public String getSummaryLine() {
 
-        if(this.amount >= 0){
+        if (this.amount >= 0) {
             return String.format("%s : +\u20AC%.02f : %s", this.timestamp.toString(), this.amount, this.notes);
         } else {
             return String.format("%s : -\u20AC%.02f : %s", this.timestamp.toString(), -this.amount, this.notes);

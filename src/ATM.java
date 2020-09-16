@@ -5,22 +5,26 @@ public class ATM {
 
     public static void main(String[] args) {
 
+
         Scanner sc = new Scanner(System.in);
 
-        Bank theBank = new Bank("Normal National Bank (NNB)");
+        // Creates an example bank
+        Bank bankNBB = new Bank("Normal National Bank (NNB)");
 
-        User aUser = theBank.addUser("John", "Doe", "1234");
+        // Creates an example user
+        User exampleUser = bankNBB.addUser("John", "Doe", "1234");
 
-        Account newAccount = new Account("Checking", aUser, theBank);
-        aUser.addAccount(newAccount);
-        theBank.addAccount(newAccount);
+        Account newAccount = new Account("Checking", exampleUser, bankNBB);
+        exampleUser.addAccount(newAccount);
+        bankNBB.addAccount(newAccount);
+
 
         User curUser;
         while (true) {
-            // stay in login prompt untill successful login
-            curUser = ATM.mainMenuPrompt(theBank, sc);
+            // stay in login prompt until successful login
+            curUser = ATM.mainMenuPrompt(bankNBB, sc);
 
-            // stay in main menu untill user quits
+            // stay in main menu until user quits
             ATM.printUserMenu(curUser, sc);
         }
     }
@@ -36,23 +40,94 @@ public class ATM {
         String userID;
         String pin;
         User authUser;
+        int register;
 
         // prompt the user for user ID/pin combo until a correct one is reached
         do {
-
+            authUser = null;
             System.out.printf("\n\nWelcome to %s \n", theBank.getName());
-            System.out.println("Enter user ID: ");
-            userID = sc.nextLine();
-            System.out.printf("Enter pin: ");
-            pin = sc.nextLine();
+            System.out.println("please select one of the options provided bellow: ");
+            System.out.println("    1) Log in for existing users");
+            System.out.println("    2) Register new account");
+            System.out.println("    3) to import existing users from banks database");
+            System.out.println("Enter option: ");
+            register = sc.nextInt();
+            if (register == 1) {
+                sc.nextLine();
+                System.out.println("Enter user ID: ");
+                userID = sc.nextLine();
+                System.out.println("Enter pin: ");
+                pin = sc.nextLine();
 
-            // try to get object corresponding to ID and pin combo
-            authUser = theBank.userLogin(userID, pin);
-            if (authUser == null) {
-                System.out.println("Incorrect user ID or pin number. Please try again.");
+                // try to get object corresponding to ID and pin combo
+                authUser = theBank.userLogin(userID, pin);
+                if (authUser == null) {
+                    System.out.println("Incorrect user ID or pin number. Please try again.");
+                }
+            } else if (register == 2) {
+                sc.nextLine();
+                System.out.println("Please provide your first name: ");
+                String firstNameOfNewUser = sc.nextLine();
+                System.out.println("Please provide your last name: ");
+                String lastNameOfNewUser = sc.nextLine();
+                System.out.println("Please provide your desired pin for this account: ");
+                String pinOfNewUser = sc.nextLine();
+
+                String url = "jdbc:mysql://localhost:3306/bank_users?useTimezone=true&serverTimezone=UTC";
+
+                try {
+                    // Establish Connection Object
+                    Connection conn = DriverManager.getConnection(url, "root", "test");
+
+                    // create a statement object to send to the database
+                    Statement statement = conn.createStatement();
+
+                    // execute prepared statement object
+                    PreparedStatement pstmt = conn.prepareStatement("INSERT INTO users_tbl (FirstName, LastName, Pin) VALUE (?,?,?)");
+                    pstmt.setString(1, firstNameOfNewUser);
+                    pstmt.setString(2, lastNameOfNewUser);
+                    pstmt.setString(3, pinOfNewUser);
+                    pstmt.executeUpdate();
+
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+
+                theBank.addUser(firstNameOfNewUser, lastNameOfNewUser, pinOfNewUser);
+            } else if (register == 3) {
+                String url = "jdbc:mysql://localhost:3306/bank_users?useTimezone=true&serverTimezone=UTC";
+
+                try {
+                    // Establish Connection Object
+                    Connection conn = DriverManager.getConnection(url, "root", "test");
+
+                    // create a statement object to send to the database
+                    Statement statement = conn.createStatement();
+
+
+                    ResultSet resultSet = statement.executeQuery("select * from users_tbl");
+
+                    // process the result
+                    while (resultSet.next()) {
+                        String firstNameOfNewUser = resultSet.getString("FirstName");
+                        String lastNameOfNewUser = resultSet.getString("LastName");
+                        String pinOfNewUser = resultSet.getString("Pin");
+                        if (theBank.checkBankUsers(firstNameOfNewUser, lastNameOfNewUser) == false) {
+                            theBank.addUser(firstNameOfNewUser, lastNameOfNewUser, pinOfNewUser);
+                        }
+                    }
+
+                    System.out.println("Imported data from remote database");
+
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+
+            } else if (register != 1 && register != 2 && register != 3) {
+                System.out.println("Please select a valid option");
             }
-
-        } while (authUser == null); // continue looping until successful login
+        }
+        while (authUser == null); // continue looping until successful login
 
         return authUser;
 

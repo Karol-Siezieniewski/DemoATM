@@ -11,7 +11,8 @@ public class Bank {
 
     /**
      * Creates a new Bank object with empty lists of users and accounts
-     * @param name  name of the bank
+     *
+     * @param name name of the bank
      */
     public Bank(String name) {
         this.name = name;
@@ -68,18 +69,21 @@ public class Bank {
         return id;
     }
 
-    public void addAccount(Account account){
+    public void addAccount(Account account) {
         this.listOfAccounts.add(account);
     }
 
     /**
      * Creates a new user of the bank
+     *
      * @param firstName user's first name
      * @param lastName  user's last name
      * @param pin       user's pin number
-     * @return          the new User object
+     * @return the new User object
      */
-    public User addUser(String firstName, String lastName, String pin){
+    public User addUser(String firstName, String lastName, String pin) {
+
+
         // create new User object and add it to our list
         User newUser = new User(firstName, lastName, pin, this);
         this.users.add(newUser);
@@ -89,16 +93,22 @@ public class Bank {
         newUser.addAccount(newAccount);
         this.addAccount(newAccount);
 
+        // creates debt account for the user and adds it to User and Bank accounts lists
+        Account newAccount1 = new Account("Debt", newUser, this);
+        newUser.addAccount(newAccount1);
+        this.addAccount(newAccount1);
+
         return newUser;
+
     }
 
-    public User userLogin(String userID, String pin){
+    public User userLogin(String userID, String pin) {
 
         // search list of users
-        for (User user : this.users){
+        for (User user : this.users) {
 
             // check if provided user ID is valid
-            if(user.getID().compareTo(userID) == 0 && user.validatePin(pin)) {
+            if (user.getID().compareTo(userID) == 0 && user.validatePin(pin)) {
                 return user;
             }
         }
@@ -107,5 +117,23 @@ public class Bank {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Checks whether user already exist in local memory to prevent same user to be loaded multiple times from remote database
+     *
+     * @param firstName First name of imported user
+     * @param lastName  Last name of imported user
+     * @return Returns true or false if user already exists in local memory
+     */
+    public boolean checkBankUsers(String firstName, String lastName) {
+        String checker = firstName + " " + lastName;
+        for (User u : users) {
+            String checkUnique = u.toString();
+            if (checkUnique.equals(checker)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
